@@ -1,4 +1,15 @@
-import { gql } from "graphql-request";
+import { useQuery } from "@tanstack/react-query";
+import request, { gql } from "graphql-request";
+
+const ENDPOINT = "https://rickandmortyapi.graphcdn.app/";
+
+export const useCharacters = (page: number) =>
+  useQuery<unknown, unknown, CharacterQueryResult>(
+    [`characters_page${page}`],
+    () => {
+      return request(ENDPOINT, CHARACTER_QUERY(page));
+    }
+  );
 
 export const CHARACTER_QUERY = (page: number) => gql`
   {
@@ -17,12 +28,10 @@ export const CHARACTER_QUERY = (page: number) => gql`
         type
         gender
         origin {
-          id
           name
         }
         location {
           name
-          id
         }
         image
         episode {
@@ -40,27 +49,26 @@ export type Character = {
   species: string;
   gender: string;
   origin: {
-    id: string;
     name: string;
   };
   location: {
-    id: string;
     name: string;
   };
   image: string;
-  episode: {
+  episode: Array<{
     episode: string;
-  };
+  }>;
   created: string;
+};
+export type Info = {
+  count: number;
+  pages: number;
+  next?: number;
+  prev?: number;
 };
 export type CharacterQueryResult = {
   characters: {
-    info: {
-      count: number;
-      pages: number;
-      next?: number;
-      prev?: number;
-    };
+    info: Info;
     results: Character[];
   };
 };
