@@ -15,7 +15,6 @@ function App() {
 
   if (data) {
     const { info, results } = data.characters;
-    console.log(results);
     return (
       <Container>
         <Center>
